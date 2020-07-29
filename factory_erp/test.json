@@ -1,0 +1,28 @@
+[
+  {
+    "login": "admin"
+  },
+  {
+    "open_page_and_create": {
+      "first": 2,
+      "second": 1,
+      "third": 1
+    }
+  },
+  {
+    "fill_in": [
+      {
+        "name":"名称",
+        "content": "测试selenium"
+      },
+      {
+        "name": "中标通知书或其它中标文件",
+        "content": "/home/meow/PycharmProjects/odooTest/test.json"
+      },
+      {
+        "name": "中标日期",
+        "content": "2020年8月20日"
+      }
+    ]
+  }
+]

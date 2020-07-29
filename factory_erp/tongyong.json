@@ -1,0 +1,84 @@
+[
+  {
+    "login": {
+      "username": "admin@meow.com",
+      "password": "admin"
+    }
+  },
+  {
+    "open_page_and_create": {
+      "first": 2,
+      "second": 4,
+      "third": 1
+    }
+  },
+  {
+    "fill_in": [
+      {
+        "name": "名称",
+        "content": "test11"
+      },
+      {
+        "name": "采购用途",
+        "content": "工厂本身通用库存"
+      },
+      {
+        "type": "tableAdd",
+        "row": [
+          [
+            {
+              "index": 1,
+              "content": "封边_PVC_1mm_17mm_1027_不区分"
+            },
+            {
+              "index": 3
+            },
+            {
+              "index": 4,
+              "content": "10"
+            }
+          ],
+          [
+            {
+              "index": 1,
+              "content": "封边_PVC_1mm_23mm_0790_不区分"
+            },
+            {
+              "index": 3
+            },
+            {
+              "index": 4,
+              "content": "100"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "save": ""
+  },
+  {
+    "wkf": "发起"
+  },
+  {
+    "logout": true
+  },
+  {
+    "login": {
+      "username": "caigou@meow.com",
+      "password": "12345"
+    }
+  },
+  {
+    "open_page_and_choose": {
+      "first": 2,
+      "second": 4,
+      "third": 1,
+      "fourth": 1
+    }
+  },
+  {
+    "wkf": "通过"
+  }
+]
