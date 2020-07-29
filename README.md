@@ -15,8 +15,8 @@ odoo页面每次重新生成，页面id总是变化的，无法使用一些工�
 
 - Python 3.8
 - Selenium 3.141.0
-- Ubuntu
-- Google Chrome
+- Ubuntu 18.04.3 LTS
+- Google Chrome 79.0.3945.88（正式版本）（64 位）
 
 
 
