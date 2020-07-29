@@ -1,0 +1,17 @@
+[
+  {
+    "login": "admin"
+  },
+  {
+    "choose": "正式项目登记"
+  },
+  "create",
+  {
+    "fill": {
+      "名称": "测试selenium",
+      "中标通知书或其它中标文件": "/home/meow/Documents/OdooUITest/config/userInfo.json",
+      "中标日期": "2020年8月20日"
+    }
+  },
+  "logout"
+]

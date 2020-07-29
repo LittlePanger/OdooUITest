@@ -1,0 +1,31 @@
+{
+  "正式项目登记": {
+    "first": 2,
+    "second": 1,
+    "third": 1
+  },
+  "工厂采购单": {
+    "first": 2,
+    "second": 4,
+    "third": 1
+  },
+  "确认拆分": {
+    "first": 2,
+    "second": 4,
+    "third": 2
+  },
+  "承包信息登记": {
+    "first": 2,
+    "second": 3,
+    "third": 1
+  },
+  "采购合同": {
+    "first": 2,
+    "second": 4,
+    "third": 3
+  },
+  "批次划分": {
+    "first": 6,
+    "second": 3
+  }
+}

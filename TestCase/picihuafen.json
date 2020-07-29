@@ -1,0 +1,29 @@
+[
+  {
+    "login": "admin"
+  },
+  {
+    "choose": "批次划分"
+  },
+  "create",
+  {
+    "fill": {
+      "tableM2M": [
+        1,
+        2
+      ],
+      "tableEdit": [
+        {
+          "套数": 2
+        },
+        {
+          "套数": 3
+        }
+      ]
+    }
+  },
+  {
+    "wait": 10
+  },
+  "close"
+]
