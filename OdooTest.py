@@ -18,7 +18,6 @@ class OdooTest:
         self.url = url
         self.button_box = self.load_json('./config/wkf_button.json')
         self.userInfo = self.load_json('./config/userInfo.json')
-        self.page = self.load_json('./config/page.json')
 
         self.driver = webdriver.Chrome(executable_path='./Driver/chromedriver')
         self.driver.get(self.url)
@@ -146,28 +145,17 @@ class OdooTest:
 
     def choose(self, name):
         """
-        根据索引打开对应页面
-        :param name: ./config/page.json中的页面名
+        根据名字打开对应页面
+        :param name: 页面名
         """
-        menu = self.page[name]
-        first = menu.get("first")
-        second = menu.get('second') + 2
-        third = menu.get('third')
-
-        # 首页按钮
-        home_btn = self.clickable(f'//*[@id="appDrawerAppPanelBody"]/ul/li[{first}]')
-        home_btn.click()
-        sleep(0.5)
-        # 顶部导航栏
-        self.driver.find_element_by_xpath(
-            f'//*[@id="odooMenuBarNav"]/div/div[1]/ul[{first}]/li[{second}]/a').click()
-        # 顶部导航栏下按钮
-        if third:
-            # page_url = self.driver.find_element_by_xpath(
-            #     f'//*[@id="odooMenuBarNav"]/div/div[1]/ul[{first}]/li[{second}]//li[{third}]/a').get_attribute('href')
-            # self.driver.get(page_url)
-            self.driver.find_element_by_xpath(
-                f'//*[@id="odooMenuBarNav"]/div/div[1]/ul[{first}]/li[{second}]//li[{third}]/a').click()
+        # 获取页面url
+        href = self.driver.find_element_by_xpath(f'//a[@data-menu-name="{name}"]').get_attribute('href')
+        self.driver.get(href)
+        sleep(1)
+        # 有时跳转需要点击左上角Apps切换页面
+        body = self.driver.find_element_by_tag_name('body')
+        if 'drawer-open' in body.get_attribute('class'):
+            self.driver.find_element_by_xpath('//a[@class="app-drawer-icon-close drawer-toggle"]').click()
         sleep(0.5)
 
     def create(self):
