@@ -242,7 +242,7 @@ class OdooTest:
         else:
             labels = self.driver.find_elements_by_xpath(label_name)
         for label in labels:
-            if name in re.sub(r'\s+', '', label.text).strip():
+            if name == re.sub(r'\s+', '', label.text).strip():
                 # 如果字段没有id属性,则利用js通过层级关系找
                 ele_list = self.driver.find_elements_by_id(label.get_attribute('for'))
                 if ele_list:
@@ -252,17 +252,18 @@ class OdooTest:
                             ele_list.remove(e)
                     ele = ele_list[0]
                 else:
-                    # 日期的input和textarea都没有id
+                    # 日期的input/textarea/m2m都没有id
                     js = "let father = arguments[0].parentNode.nextElementSibling;" \
                          "return father.getElementsByClassName('o_form_input_file')[0]" \
                          "|| father.getElementsByClassName('o_datepicker_input')[0]" \
+                         "|| father.getElementsByClassName('ui-autocomplete-input')[0]" \
                          "|| father.getElementsByTagName('textarea')[0];"
                     ele = self.driver.execute_script(js, label)
                 if ele.tag_name == 'select':
                     # selection字段
                     Select(ele).select_by_visible_text(content)
                 elif 'ui-autocomplete-input' in ele.get_attribute('class'):
-                    # m2o字段
+                    # m2o/m2m字段
                     ele.clear()
                     ele.send_keys(content)
                     sleep(0.5)
