@@ -1,33 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import json
 import re
 from time import sleep
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.wait import WebDriverWait
+
+from driver import Driver
 
 
-class OdooTest:
+class OdooTest(Driver):
     def __init__(self, url):
-        self.url = url
         self.button_box = self.load_json('./config/wkf_button.json')
-        self.userInfo = self.load_json('./config/userInfo.json')
-
-        self.driver = webdriver.Chrome(executable_path='./Driver/chromedriver')
-        self.driver.get(self.url)
-        self.choose_databases()
-
-    def close(self):
-        """
-        关闭浏览器
-        """
-        self.driver.close()
+        super(OdooTest, self).__init__(url)
 
     @staticmethod
     def wait(second):
@@ -36,15 +22,6 @@ class OdooTest:
         :param second: 秒
         """
         sleep(second)
-
-    @staticmethod
-    def load_json(path):
-        """
-        加载json
-        :param path: json文件路径
-        """
-        with open(path)as f:
-            return json.loads(f.read())
 
     def execute(self, path):
         """
@@ -67,20 +44,6 @@ class OdooTest:
             else:
                 print(f'步骤 {name} 不存在')
                 return
-
-    def clickable(self, xpath):
-        """
-        等待直到按钮可点击, 超时报错
-        :param xpath: xpath
-        :return: 按钮
-        """
-        wait = WebDriverWait(self.driver, 5)  # 等待的最大时间
-        try:
-            # 判断该元素是否可点击
-            return wait.until(ec.element_to_be_clickable((By.XPATH, xpath)))
-        except TimeoutException:
-            print('加载超时')
-            exit()
 
     def is_exist(self, xpath):
         """
@@ -108,28 +71,12 @@ class OdooTest:
         if button:
             button.click()
 
-    def choose_databases(self):
-        """
-        选择第一个数据库
-        """
-        self.driver.find_element_by_xpath('/html/body/div[1]/div/div[3]/a[1]').click()
-
-    def login(self, name):
-        """
-        选择登录方式 - 输入账号密码
-        :param name: userInfo中配置名
-        """
-        # 选择账户登录
-        self.driver.find_element_by_xpath('/html/body/div/div[2]/a').click()
-        # 账号密码登录
-        self.driver.find_element_by_xpath('//*[@id="login"]').send_keys(self.userInfo[name]['username'])
-        self.driver.find_element_by_xpath('//*[@id="password"]').send_keys(self.userInfo[name]['password'])
-        self.driver.find_element_by_xpath('/html/body/form/div[3]/button').click()
-
     def logout(self):
         """
         退出账号
         """
+        if self.is_exist('//div[contains(@class,"modal-dialog")]'):
+            self.dialog_button(1)
         self.driver.find_element_by_xpath('//header//li[@class="o_user_menu"]/a').click()
         self.driver.find_element_by_xpath('//header//ul[@class="dropdown-menu"]//a[@data-menu="logout"]').click()
         if self.is_exist('//div[contains(@class,"modal-dialog")]'):
@@ -143,31 +90,7 @@ class OdooTest:
         self.logout()
         self.login(name)
 
-    def choose(self, name):
-        """
-        根据名字打开对应页面
-        :param name: 页面名
-        """
-        # 获取页面url
-        href = self.driver.find_element_by_xpath(f'//a[@data-menu-name="{name}"]').get_attribute('href')
-        self.driver.get(href)
-        sleep(1)
-        # 有时跳转需要点击左上角Apps切换页面
-        body = self.driver.find_element_by_tag_name('body')
-        if 'drawer-open' in body.get_attribute('class'):
-            self.driver.find_element_by_xpath('//a[@class="app-drawer-icon-close drawer-toggle"]').click()
-        sleep(0.5)
-
-    def create(self):
-        """
-        点击创建
-        """
-        # 创建
-        create_btn = self.clickable('/html/body/div[1]/div[2]/div[1]/div[2]/div[1]/div/button')
-        create_btn.click()
-        sleep(1)
-
-    def open(self, index):
+    def choose(self, index):
         """
         根据索引打开对应页面并点击对应的kanban or tree
         :param index: 索引
@@ -193,11 +116,17 @@ class OdooTest:
         :param button: ./config/wkf_button.json中的按钮名
         """
         index = self.button_box[button]
-        self.clickable(f'//div[@name="button_box"]/button[{index}]').click()
+        sleep(1)
+        try:
+            self.driver.find_element_by_xpath(f'//div[@name="button_box"]/button[{index}]').click()
+        except ElementNotInteractableException:
+            print('按钮无法点击,可能是没有权限')
+            exit()
         # 除了[发起,挂起],其他需要填写内容
         if index not in [1, 7]:
             self.driver.find_element_by_id('description').send_keys('1')
             self.dialog_button(1)
+        sleep(1)
 
     def fill(self, contents):
         """
@@ -205,17 +134,18 @@ class OdooTest:
         :param contents: {'name1':'content1','name2':'content2','tableAdd/tableEdit/tableM2M':[]}
         """
         for name, content in contents.items():
-            if name == 'tableAdd':
-                self.table_add(content)
-            elif name == 'tableEdit':
-                self.click_blank()
-                self.table_edit(content)
-            elif name == 'tableM2M':
-                self.table_m2m(content)
-            # elif content.get('type') == 'file':
-            #     self.file(content)
-            else:
-                self.general_content('tag', 'label', name, content)
+            if content:
+                if name == 'tableAdd':
+                    self.table_add(content)
+                elif name == 'tableEdit':
+                    self.click_blank()
+                    self.table_edit(content)
+                elif name == 'tableM2M':
+                    self.table_m2m(content)
+                # elif content.get('type') == 'file':
+                #     self.file(content)
+                else:
+                    self.general_content('tag', 'label', name, content)
 
     def general_content(self, find_type, label_name, name, content):
         """
@@ -247,32 +177,30 @@ class OdooTest:
                          "|| father.getElementsByClassName('ui-autocomplete-input')[0]" \
                          "|| father.getElementsByTagName('textarea')[0];"
                     ele = self.driver.execute_script(js, label)
-                if ele.tag_name == 'select':
-                    # selection字段
-                    Select(ele).select_by_visible_text(content)
-                elif 'ui-autocomplete-input' in ele.get_attribute('class'):
-                    # m2o/m2m字段
-                    ele.clear()
-                    ele.send_keys(content)
-                    sleep(0.5)
-                    ele.send_keys(Keys.ENTER)
-                elif 'o_datepicker_input' in ele.get_attribute('class'):
-                    # date字段
-                    if content:
+                if ele:
+                    if ele.tag_name == 'select':
+                        # selection字段
+                        Select(ele).select_by_visible_text(content)
+                    elif 'ui-autocomplete-input' in ele.get_attribute('class'):
+                        # m2o/m2m字段
                         ele.clear()
                         ele.send_keys(content)
+                        sleep(0.5)
+                        ele.send_keys(Keys.ENTER)
+                    elif 'o_datepicker_input' in ele.get_attribute('class'):
+                        # date字段
+                        ele.clear()
+                        ele.send_keys(content)
+                        # 解决前端报错弹窗
+                        self.click_blank()
+                        self.dialog_button(1)
+                    elif 'o_form_input_file' in ele.get_attribute('class'):
+                        # 文件
+                        ele.send_keys(content)
                     else:
-                        ele.click()
-                    # 解决前端报错弹窗
-                    self.click_blank()
-                    self.dialog_button(1)
-                elif 'o_form_input_file' in ele.get_attribute('class'):
-                    # 文件
-                    ele.send_keys(content)
-                else:
-                    # char和float等
-                    ele.clear()
-                    ele.send_keys(content)
+                        # char和float等
+                        ele.clear()
+                        ele.send_keys(content)
                 break
 
     def table_add(self, rows):
@@ -285,18 +213,21 @@ class OdooTest:
         add_btn.click()
         # 表格中的input
         input_xpath = f'//div[@class="o_form_field o_form_field_one2many o_view_manager_content"]//input'
-        inputs = self.driver.find_elements_by_xpath(input_xpath)
+        inputs = []
+        for inp in self.driver.find_elements_by_xpath(input_xpath):
+            if not inp.get_attribute('type') == 'hidden':
+                inputs.append(inp)
         # 按照顺序填写内容
         for row in rows:
             for index, content in row.items():
-                index = int(index)
-                inputs[index - 1].click()
-                if content:
-                    inputs[index - 1].clear()
+                inp = inputs[int(index) - 1]
+                if inp.get_attribute('type') != 'file':
+                    inp.click()
+                    inp.clear()
                     # clear float时会弹窗,点击取消
                     self.dialog_button(2)
-                    inputs[index - 1].send_keys(content)
-                    sleep(0.5)
+                inp.send_keys(content)
+                sleep(0.5)
             else:
                 add_btn.click()
                 sleep(1)

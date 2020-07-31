@@ -2,5 +2,41 @@
   "admin": {
     "username": "admin@meow.com",
     "password": "admin"
+  },
+  "合约": {
+    "username": "heyue@meow.com",
+    "password": "12345"
+  },
+  "成本": {
+    "username": "chengben@meow.com",
+    "password": "12345"
+  },
+  "工厂": {
+    "username": "gc@meow.com",
+    "password": "12345"
+  },
+  "控股": {
+    "username": "konggu@meow.com",
+    "password": "12345"
+  },
+  "成本管理员": {
+    "username": "cbguanli@meow.com",
+    "password": "12345"
+  },
+  "test": {
+    "username": "test@meow.com",
+    "password": "123456"
+  },
+  "财务": {
+    "username": "caiwu@meow.com",
+    "password": "12345"
+  },
+  "工厂出纳": {
+    "username": "gcchuna@meow.com",
+    "password": "12345"
+  },
+  "采购": {
+    "username": "caigou@meow.com",
+    "password": "12345"
   }
 }
