@@ -51,6 +51,7 @@ pycharm : 修改path变量, 改为所需json路径
     - wkf_button.json : 工作流按钮配置，基本不需要修改
     - userInfo.json : TestCase配置时只需填写用户名
     - ~~page.json : 页面索引,减少TestCase配置~~
+    - case_path.json : case存放位置
 
 
 
