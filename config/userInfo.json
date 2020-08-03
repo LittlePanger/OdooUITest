@@ -38,5 +38,9 @@
   "采购": {
     "username": "caigou@meow.com",
     "password": "12345"
+  },
+  "生产": {
+    "username": "shengchan@justtruth.cn",
+    "password": "12345"
   }
 }

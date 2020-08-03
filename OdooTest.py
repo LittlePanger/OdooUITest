@@ -32,18 +32,26 @@ class OdooTest(Driver):
         for step in steps:
             # 判断步骤是字典还是字符串
             if isinstance(step, dict):
-                name, content = step.popitem()
+                if len(step) > 1:
+                    for name, content in step.items():
+                        self.reflex(name, content)
+                    continue
+                else:
+                    name, content = step.popitem()
             else:
                 name, content = step, None
-            if hasattr(self, name):
-                # 判断是否有参数
-                if content:
-                    getattr(self, name)(content)
-                else:
-                    getattr(self, name)()
+            self.reflex(name, content)
+
+    def reflex(self, name, content):
+        if hasattr(self, name):
+            # 判断是否有参数
+            if content:
+                getattr(self, name)(content)
             else:
-                print(f'步骤 {name} 不存在')
-                return
+                getattr(self, name)()
+        else:
+            print(f'步骤 {name} 不存在')
+            return
 
     def is_exist(self, xpath):
         """

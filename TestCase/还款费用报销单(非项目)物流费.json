@@ -1,12 +1,8 @@
 [
   {
-    "login": "test"
-  },
-  {
-    "open": "还款/费用报销单(非项目)"
-  },
-  "create",
-  {
+    "login": "test",
+    "open": "还款/费用报销单(非项目)",
+    "create": null,
     "fill": {
       "部门名称": "",
       "所属公司": "",
@@ -26,13 +22,11 @@
           "5": "/home/meow/Downloads/附件.txt"
         }
       ]
-    }
+    },
+    "save": null,
+    "wkf": "发起",
+    "logout": null
   },
-  "save",
-  {
-    "wkf": "发起"
-  },
-  "logout",
   {
     "login": "采购"
   },
