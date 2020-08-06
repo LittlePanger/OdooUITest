@@ -1,0 +1,23 @@
+[
+  {
+    "login": "采购",
+    "open": "执行成本调整",
+    "choose": 1,
+    "wkf": "通过",
+    "logout": null
+  },
+  {
+    "login": "工厂",
+    "open": "执行成本调整",
+    "choose": 1,
+    "wkf": "通过",
+    "logout": null
+  },
+  {
+    "login": "控股",
+    "open": "执行成本调整",
+    "choose": 1,
+    "wkf": "通过",
+    "logout": null
+  }
+]

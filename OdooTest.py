@@ -3,7 +3,7 @@
 import re
 from time import sleep
 
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
@@ -12,6 +12,7 @@ from driver import Driver
 
 class OdooTest(Driver):
     def __init__(self, url):
+        self.wkf_error = 0
         self.button_box = self.load_json('./config/wkf_button.json')
         super(OdooTest, self).__init__(url)
 
@@ -53,17 +54,6 @@ class OdooTest(Driver):
             print(f'步骤 {name} 不存在')
             return
 
-    def is_exist(self, xpath):
-        """
-        判断元素是否存在
-        :return: 存在返回元素,否则返回Flase
-        """
-        try:
-            flag = self.driver.find_element_by_xpath(xpath)
-        except NoSuchElementException:
-            flag = False
-        return flag
-
     def click_blank(self):
         """
         点击空白处(其实是breadcrumb的标题)
@@ -98,25 +88,32 @@ class OdooTest(Driver):
         self.logout()
         self.login(name)
 
-    def choose(self, index):
+    def choose(self, model_id: dict):
         """
-        根据索引打开对应页面并点击对应的kanban or tree
-        :param index: 索引
+        :param model_id:
         """
-        kanban = self.is_exist(f'//div[contains(@class,"o_kanban_view")]/div[{index}]')
-        tree = self.is_exist(f'//table[contains(@class,"o_list_view")]/tbody/tr[{index}]')
-        if kanban:
-            kanban.click()
-        elif tree:
-            tree.click()
-        else:
-            raise IndexError('fourth超出范围')
+        self.model, self.id = model_id.popitem()
+        # 根据索引打开对应页面并点击对应的kanban or tree
+        # kanban = self.is_exist(f'//div[contains(@class,"o_kanban_view")]/div[{index}]')
+        # tree = self.is_exist(f'//table[contains(@class,"o_list_view")]/tbody/tr[{index}]')
+        # if kanban:
+        #     kanban.click()
+        # elif tree:
+        #     tree.click()
+        # else:
+        #     raise IndexError('fourth超出范围')
 
     def save(self):
         """
-        保存
+        保存, 保存model和id
         """
         self.driver.find_element_by_xpath('//div[@class="o_form_buttons_edit"]/button[1]').click()
+        sleep(1)
+
+        url = self.driver.current_url
+        self.id = re.search(r"(?<=id=).*?(?=&)", url).group()
+        self.model = re.search(r"(?<=model=).*?(?=&)", url).group()
+        print(f'生成数据成功,model:{self.model},id:{self.id}')
 
     def wkf(self, button):
         """
@@ -128,8 +125,12 @@ class OdooTest(Driver):
         try:
             self.driver.find_element_by_xpath(f'//div[@name="button_box"]/button[{index}]').click()
         except ElementNotInteractableException:
-            print('按钮无法点击,可能是没有权限')
-            exit()
+            print('按钮无法点击,可能是没有权限或错误节点,尝试下一个账号')
+            self.wkf_error += 1
+            if self.wkf_error == 3:
+                print('三次无法点击,退出')
+                exit()
+            return
         # 除了[发起,挂起],其他需要填写内容
         if index not in [1, 7]:
             self.driver.find_element_by_id('description').send_keys('1')
@@ -235,6 +236,9 @@ class OdooTest(Driver):
                     # clear float时会弹窗,点击取消
                     self.dialog_button(2)
                 inp.send_keys(content)
+                # 输入日期报错弹窗
+                sleep(1)
+                self.dialog_button(1)
                 sleep(0.5)
             else:
                 add_btn.click()
@@ -266,8 +270,8 @@ class OdooTest(Driver):
                         f'//div[@class="o_form_field o_form_field_one2many o_view_manager_content"]//table//th[@data-id]')
                     # 点击表格出现的所有输入框
                     tables_old = self.driver.find_elements_by_xpath(
-                        '//div[contains(@class,"o_form_view o_list_editable_form o_form_nosheet o_cannot_create '
-                        'o_form_editable")]/*')
+                        '//div[contains(@class,"o_form_view") and contains(@class,"o_list_editable_form") and'
+                        ' contains(@class,"o_form_nosheet") and contains(@class,"o_form_editable")]/*')
                     # 过滤隐藏的
                     tables = []
                     for table in tables_old:
