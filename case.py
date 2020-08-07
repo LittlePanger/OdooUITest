@@ -108,14 +108,14 @@ class Case(Driver):
 
 
 if __name__ == '__main__':
-    c = Case('http://127.0.0.1:8069/web', page='外协分包合同扣款登记表', name='factory')
+    c = Case('http://127.0.0.1:8069/web', page='外协分包保修结束登记表', name='site')
     # c.add_login('test')
     # c.add_open()
     # c.add_create()
     # c.add_fill()
     # c.add_save()
     c.add_login_create_logout(username="成本管理员")
-    # c.add_login_wkf_logout('生产', '通过')
+    c.add_login_wkf_logout('生产', '通过')
 
     c.add_login_wkf_logout(username='采购', button='通过')
     # c.add_login_wkf_logout('财务', '通过')

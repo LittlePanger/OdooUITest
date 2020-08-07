@@ -1,20 +1,13 @@
 [
   {
-    "login": "成本管理员",
-    "open": "外协分包合同借还款登记表",
-    "create": null,
-    "fill": {
-      "项目名称": "2020新加坡诺曼顿项目",
-      "分包合同名称": "2020factory",
-      "申请借还款原因": "111",
-      "申请性质": "借款",
-      "分包申请本次借/还款金额": "5000",
-      "项目审核本次借/还款金额": "5000",
-      "备注": "",
-      "借还款文件": "/home/meow/Downloads/附件.txt"
-    },
-    "save": null,
-    "wkf": "发起",
+    "choose": {
+      "yuanzhu.project.subcontract.payment": 6
+    }
+  },
+  {
+    "login": "生产",
+    "open": -1,
+    "wkf": "通过",
     "logout": null
   },
   {
@@ -24,9 +17,16 @@
     "logout": null
   },
   {
-    "login": "成本管理员",
+    "login": "工厂",
     "open": -1,
     "wkf": "通过",
     "logout": null
-  }
+  },
+  {
+    "login": "控股",
+    "open": -1,
+    "wkf": "通过",
+    "logout": null
+  },
+  "close"
 ]
