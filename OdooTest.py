@@ -133,6 +133,7 @@ class OdooTest(Driver):
             return
         # 除了[发起,挂起],其他需要填写内容
         if index not in [1, 7]:
+            sleep(1)
             self.driver.find_element_by_id('description').send_keys('1')
             self.dialog_button(1)
         sleep(1)
